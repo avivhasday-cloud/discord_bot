@@ -4,6 +4,8 @@ from discord.ext import commands
 from discord.utils import get
 from utils.player import MusicPlayer
 from utils.message_format import  MessageFormater
+from utils.logger import LOGGER
+
 class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -17,6 +19,7 @@ class Music(commands.Cog):
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice is None or not voice.is_connected():
             await voice_channel.connect()
+            LOGGER.info(f"Bot is connected to channel {voice_channel}")
             voice = get(self.client.voice_clients, guild=ctx.guild)
 
         song = self.music_player.search_youtube(query)
@@ -39,14 +42,14 @@ class Music(commands.Cog):
     async def show_queue(self, ctx):
         queue_template = "Music Queue\n"
         queue_view = queue_template
-        print(len(self.music_player.queue))
+        LOGGER.info(f"Queue length: {len(self.music_player.queue)}")
         for i in range(len(self.music_player.queue)):
             _, title = self.music_player.queue[i]
             queue_view += f"{i+1}) {title}\n"
 
-        print(queue_view)
         if queue_view != queue_template:
             formated_message = self.message_formatter.get_italian_code_block_format(queue_view)
+            LOGGER.info(f"Queue Function: Sending message to discord channel ")
             await ctx.send(formated_message)
         else:
             message = "No music in queue"
@@ -70,6 +73,7 @@ class Music(commands.Cog):
         if not voice.is_playing():
             voice.resume()
             message = 'Bot is resuming'
+            LOGGER.info(message)
             formated_message = self.message_formatter.get_block_quote_format(message)
             await ctx.send(formated_message)
 
@@ -77,10 +81,10 @@ class Music(commands.Cog):
     @commands.command(name="pause", help="Pause music player activity")
     async def pause(self, ctx):
         voice = get(self.client.voice_clients, guild=ctx.guild)
-
         if voice.is_playing():
             voice.pause()
             message = 'Bot has been paused'
+            LOGGER.info(message)
             formated_message = self.message_formatter.get_block_quote_format(message)
             await ctx.send(formated_message)
 
@@ -92,6 +96,8 @@ class Music(commands.Cog):
             voice.stop()
             self.music_player.queue.clear()
             message = 'Bot has been stopped'
+            LOGGER.info(message)
+
             formated_message = self.message_formatter.get_block_quote_format(message)
             await ctx.send(formated_message)
 

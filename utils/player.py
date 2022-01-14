@@ -1,7 +1,7 @@
 from youtube_dl import YoutubeDL
 import discord
 from discord import ClientException
-
+from logger import LOGGER
 class MusicPlayer():
 
     def __init__(self):
@@ -15,9 +15,12 @@ class MusicPlayer():
     def search_youtube(self, item):
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
             try:
+                LOGGER.info(f"Searching {item} in youtube")
                 if item.startswith("http"):
+                    LOGGER.info(f"{item} is URL")
                     info = ydl.extract_info(item, download=False)
                 else:
+                    LOGGER.info(f"{item} is search query")
                     info = ydl.extract_info("ytsearch:%s" % item, download=False)['entries'][0]
             except Exception:
                 return False
@@ -31,6 +34,7 @@ class MusicPlayer():
             (url, title) = self.queue[0]
             # remove the first element as you are currently playing it
             self.queue.pop(0)
+            LOGGER.info(f"Start playing {title}")
             voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(voice))
         else:
             self.is_playing = False
@@ -43,6 +47,7 @@ class MusicPlayer():
                 (url, title) = self.queue[0]
                 # remove the first element as you are currently playing it
                 self.queue.pop(0)
+                LOGGER.info(f"Start playing {title}")
                 voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(voice))
             except ClientException as err:
                 print(err)
