@@ -1,7 +1,7 @@
 from youtube_dl import YoutubeDL
 import discord
 from discord import ClientException
-from logger import LOGGER
+from utils.logger import LOGGER
 class MusicPlayer():
 
     def __init__(self):

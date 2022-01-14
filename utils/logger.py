@@ -1,4 +1,4 @@
 import logging
 
-
-LOGGER = logging.getLogger()
+LOGGER = logging
+LOGGER.basicConfig(format='%(asctime)s - %(message)s', level=logging.DEBUG)
