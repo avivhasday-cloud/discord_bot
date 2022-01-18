@@ -16,7 +16,7 @@ class MessageFormater:
 
     def get_italian_code_block_format(self, message:str) -> str:
         lines = message.split("\n")
-        header = f"{self.bold_italic_style} {lines[0]} {self.bold_italic_style}"
+        header = f"{self.bold_italic_style} {lines[0]} {self.bold_italic_style} \n"
         formated_str = f'{self.code_block_style}'
         formated_str += header
         index = 1 if len(lines) > 1 else 0

@@ -19,7 +19,7 @@ class General(commands.Cog):
         else:
             await ctx.voice_client.move_to(voice_channel)
 
-    @commands.command(aliases=['bye'])
+    @commands.command(name='disconnect',aliases=['bye'])
     async def disconnect(self, ctx):
         await ctx.send("I'm leaving the channel, Bye :)")
         await ctx.voice_client.disconnect()

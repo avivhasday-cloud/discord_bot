@@ -12,7 +12,7 @@ class Music(commands.Cog):
         self.music_player = MusicPlayer()
         self.message_formatter = MessageFormater()
 
-    @commands.command(name="play", help="Plays a selected song from youtube")
+    @commands.command(name="play", aliases=['p'], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
         query = " ".join(args)
         voice_channel = ctx.author.voice.channel
@@ -38,7 +38,7 @@ class Music(commands.Cog):
                 await self.music_player.play_music(voice)
 
 
-    @commands.command(name="queue", help="Displays the current songs in queue")
+    @commands.command(name="queue", aliases=['q'], help="Displays the current songs in queue")
     async def show_queue(self, ctx):
         queue_template = "Music Queue\n"
         queue_view = queue_template
@@ -57,7 +57,7 @@ class Music(commands.Cog):
             await ctx.send(formated_message)
 
 
-    @commands.command(name="skip", help="Skips the current song being played")
+    @commands.command(name="next", aliases=['n'], help="Skips the current song being played")
     async def skip(self, ctx):
         voice = get(self.client.voice_clients, guild=ctx.guild)
 
