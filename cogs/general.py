@@ -1,3 +1,5 @@
+import time
+
 import discord
 from discord.ext import commands
 import os
@@ -10,8 +12,9 @@ class General(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
+        time.sleep(10)
         voice_state = member.guild.voice_client  # Get the member in the channel
-        if voice_state is not None and len(voice_state.channel.members) == 1:  # If bot is alone
+        if voice_state is not None and len(voice_state.channel.members) == 1:# If bot is alone
             await voice_state.disconnect()  # Disconnect
 
     @commands.command()
