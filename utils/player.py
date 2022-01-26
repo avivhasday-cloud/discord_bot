@@ -48,7 +48,7 @@ class MusicPlayer():
                 # remove the first element as you are currently playing it
                 self.queue.pop(0)
                 LOGGER.info(f"Start playing {title}")
-                voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS))
+                voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(voice))
             except ClientException as err:
                 print(err)
         else:

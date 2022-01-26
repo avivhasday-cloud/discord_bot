@@ -12,6 +12,8 @@ class Music(commands.Cog):
         self.music_player = MusicPlayer()
         self.message_formatter = MessageFormater()
 
+
+
     @commands.command(name="play", aliases=['p'], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
         query = " ".join(args)

@@ -8,6 +8,12 @@ class General(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        voice_state = member.guild.voice_client  # Get the member in the channel
+        if voice_state is not None and len(voice_state.channel.members) == 1:  # If bot is alone
+            await voice_state.disconnect()  # Disconnect
+
     @commands.command()
     async def join(self, ctx):
         if ctx.author.voice is None:
