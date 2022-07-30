@@ -3,16 +3,16 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 from utils.player import MusicPlayer
-from utils.message_format import  MessageFormater
+from utils.message_format import MessageFormater
 from utils.logger import LOGGER
+
 
 class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.music_player = MusicPlayer()
         self.message_formatter = MessageFormater()
-
-
+        discord.opus.load_opus('libopus-0-x64.dll')
 
     @commands.command(name="play", aliases=['p'], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
@@ -21,8 +21,8 @@ class Music(commands.Cog):
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice is None or not voice.is_connected():
             await voice_channel.connect()
-            if len(self.music_player.queue) > 0:
-                self.music_player.queue.clear()
+            if len(self.music_player.music_queue) > 0:
+                self.music_player.music_queue.clear()
                 LOGGER.info(f"Music player queue is not empty, clearing queue now!")
             LOGGER.info(f"Bot is connected to channel {voice_channel}")
             voice = get(self.client.voice_clients, guild=ctx.guild)
@@ -38,18 +38,17 @@ class Music(commands.Cog):
             message = f"Song: {title} added to the queue"
             formated_message = self.message_formatter.get_block_quote_format(message)
             await ctx.send(formated_message)
-            self.music_player.queue.append(song)
+            self.music_player.music_queue.put(song)
             if not self.music_player.is_playing:
                 await self.music_player.play_music(voice)
-
 
     @commands.command(name="queue", aliases=['q'], help="Displays the current songs in queue")
     async def show_queue(self, ctx):
         queue_template = "Music Queue\n"
         queue_view = queue_template
-        LOGGER.info(f"Queue length: {len(self.music_player.queue)}")
-        for i in range(len(self.music_player.queue)):
-            _, title = self.music_player.queue[i]
+        LOGGER.info(f"Queue length: {len(self.music_player.music_queue)}")
+        for i in range(len(self.music_player.music_queue)):
+            _, title = self.music_player.music_queue[i]
             queue_view += f"{i+1}) {title}\n"
 
         if queue_view != queue_template:
@@ -60,7 +59,6 @@ class Music(commands.Cog):
             message = "No music in queue"
             formated_message = self.message_formatter.get_block_quote_format(message)
             await ctx.send(formated_message)
-
 
     @commands.command(name="next", aliases=['n'], help="Skips the current song being played")
     async def skip(self, ctx):
@@ -99,7 +97,7 @@ class Music(commands.Cog):
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice.is_playing():
             voice.stop()
-            self.music_player.queue.clear()
+            self.music_player.music_queue.clear()
             message = 'Bot has been stopped'
             LOGGER.info(message)
 
