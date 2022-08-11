@@ -8,7 +8,7 @@ from utils.logger import LOGGER
 class MusicPlayer():
 
     def __init__(self):
-        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True', 'verbose': 'True'}
+        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
                                'options': '-vn'}
         self.music_queue = MusicQueue()
@@ -30,19 +30,6 @@ class MusicPlayer():
 
         return info['formats'][0]['url'], info['title']
 
-    def play_next(self, voice):
-        if len(self.music_queue) > 0:
-            self.is_playing = True
-            # get the first url
-            (url, title) = self.music_queue.queue[0]
-            # remove the first element as you are currently playing it
-            self.music_queue.pop(0)
-            LOGGER.info(f"Start playing {title}")
-            source = discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS)
-            voice.play(source, after=lambda e: self.play_next(voice))
-        else:
-            self.is_playing = False
-
     # infinite loop checking
     async def play_music(self, voice):
         if len(self.music_queue) > 0:
@@ -52,7 +39,7 @@ class MusicPlayer():
                 # remove the first element as you are currently playing it
                 self.music_queue.pop(0)
                 LOGGER.info(f"Start playing {title}")
-                voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(voice))
+                voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_music(voice))
             except ClientException as err:
                 print(err)
         else:

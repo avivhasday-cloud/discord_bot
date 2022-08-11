@@ -42,6 +42,6 @@ class MusicQueue:
     def get_queue_as_dict(self) -> dict:
         return {idx: item for idx, item in enumerate(self.queue)}
 
-    def set_loop_over_queue(self):
-        self.loop_queue = True
+    def set_loop_over_queue(self, status: bool):
+        self.loop_queue = status
 
