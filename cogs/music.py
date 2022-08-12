@@ -16,7 +16,7 @@ class Music(commands.Cog):
     @commands.command(name="play", aliases=['p'], help="Plays a selected song from youtube")
     async def play(self, ctx, *args):
         query = " ".join(args)
-        song_list_requests = query.split()
+        song_list_requests = query.split(",") if ',' in query else [query]
         voice_channel = ctx.author.voice.channel
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice is None or not voice.is_connected():
@@ -47,9 +47,10 @@ class Music(commands.Cog):
     async def show_queue(self, ctx):
         queue_template = "Music Queue\n"
         queue_view = queue_template
-        LOGGER.info(f"Queue length: {len(self.music_player.music_queue.queue)}")
-        for i in range(len(self.music_player.music_queue.queue)):
-            _, title = self.music_player.music_queue[i]
+        queue = self.music_player.music_queue.queue
+        LOGGER.info(f"Queue length: {len(queue)}")
+        for i in range(len(queue)):
+            _, title = queue[i]
             queue_view += f"{i+1}) {title}\n"
 
         if queue_view != queue_template:
@@ -68,10 +69,15 @@ class Music(commands.Cog):
         if voice:
             voice.stop()
             # try to play next in the queue if it exists
-            message = f"Skipping to song: {self.music_player.music_queue.get()[1]}"
+            item = self.music_player.music_queue.get()
+            if item is None:
+                message = f"There is no songs in music queue"
+            else:
+                message = f"Skipping to song: {item[1]}"
             formated_message = self.message_formatter.get_block_quote_format(message)
             await ctx.send(formated_message)
-            await self.music_player.play_music(voice)
+            if item is not None:
+                await self.music_player.play_music(voice)
 
     @commands.command(name="resume", help="Resume music player activity")
     async def resume(self, ctx):
@@ -121,7 +127,7 @@ class Music(commands.Cog):
 
     # command to unloop queue
     @commands.command(name="unloop", help="unloop music queue")
-    async def loop(self, ctx):
+    async def unloop(self, ctx):
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice.is_playing() and self.music_player.music_queue:
             message = 'Stopping loop over Music Queue'

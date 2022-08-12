@@ -30,18 +30,27 @@ class MusicPlayer():
 
         return info['formats'][0]['url'], info['title']
 
-    # infinite loop checking
-    async def play_music(self, voice):
-        if len(self.music_queue) > 0:
+    def play_next(self, voice):
+        if not self.music_queue.is_empty():
             try:
                 self.is_playing = True
-                (url, title) = self.music_queue.queue[0]
-                # remove the first element as you are currently playing it
-                self.music_queue.pop(0)
+                # get the first url
+                (url, title) = self.music_queue.get()
+                if not self.music_queue.loop_queue:
+                    self.music_queue.pop()
+                else:
+                    current_index = self.music_queue.current_track_index
+                    self.music_queue.current_track_index = current_index + 1 if current_index < len(self.music_queue) -1 else 0
                 LOGGER.info(f"Start playing {title}")
-                voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_music(voice))
+                voice.play(discord.FFmpegPCMAudio(url, **self.FFMPEG_OPTIONS))
             except ClientException as err:
-                print(err)
+                LOGGER.error(f"{err}")
         else:
+            LOGGER.info("Queue is empty!")
             self.is_playing = False
+
+    # infinite loop checking
+    async def play_music(self, voice):
+        while not voice.is_playing():
+            self.play_next(voice)
 
