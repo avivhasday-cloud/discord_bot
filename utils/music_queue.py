@@ -47,5 +47,8 @@ class MusicQueue:
 
     def set_loop_over_queue(self, status: bool):
         self.loop_queue = status
-        self.current_track_index = 0
 
+    def reset(self):
+        self.queue.clear()
+        self.current_track_index = 0
+        self.loop_queue = False

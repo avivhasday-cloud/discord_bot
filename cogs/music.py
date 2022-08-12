@@ -21,9 +21,8 @@ class Music(commands.Cog):
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice is None or not voice.is_connected():
             await voice_channel.connect()
-            if len(self.music_player.music_queue) > 0:
-                self.music_player.music_queue.clear()
-                LOGGER.info(f"Music player queue is not empty, clearing queue now!")
+            self.music_player.music_queue.reset()
+            LOGGER.info(f"Music player queue is not empty, clearing queue now!")
             LOGGER.info(f"Bot is connected to channel {voice_channel}")
             voice = get(self.client.voice_clients, guild=ctx.guild)
 
@@ -107,7 +106,7 @@ class Music(commands.Cog):
         voice = get(self.client.voice_clients, guild=ctx.guild)
         if voice.is_playing():
             voice.stop()
-            self.music_player.music_queue.clear()
+            self.music_player.music_queue.reset()
             message = 'Bot has been stopped'
             LOGGER.info(message)
 
