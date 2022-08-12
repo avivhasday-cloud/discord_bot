@@ -14,6 +14,10 @@ class MusicPlayer():
         self.music_queue = MusicQueue()
         self.is_playing = False
 
+    def reset(self):
+        self.music_queue.reset()
+        self.is_playing = False
+
     # searching the item on youtube
     def search_youtube(self, item):
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
