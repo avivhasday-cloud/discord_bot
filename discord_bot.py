@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 from config import Config
 from utils.logger import LOGGER
@@ -8,6 +7,7 @@ client = commands.Bot(command_prefix='/')
 @client.command()
 async def on_ready():
     print('Bot is ready!')
+
 
 
 client.load_extension('cogs.music')

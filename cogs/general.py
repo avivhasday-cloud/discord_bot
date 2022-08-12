@@ -6,6 +6,7 @@ import os
 
 ADMIN_USER = os.environ.get('ADMIN_USER')
 
+
 class General(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -40,7 +41,6 @@ class General(commands.Cog):
     @commands.command(aliases=['name'])
     async def say_name(self, ctx):
         await ctx.send(f'Your name is {ctx.author.name}')
-
 
     @commands.command(aliases=['commandlist', 'commands'])
     async def _help(self, ctx):
